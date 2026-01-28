@@ -69,13 +69,14 @@ export const useDebounce = <V>(value: V, delay?: number) => {
   useEffect(() => {
     // 每次在value变化以后，设置一个定时器
     const timeout = setTimeout(() => setDebouncedValue(value), delay);
-    // 每次在上一个useEffect处理完以后再运行
+    // 返回的一个函数，这个函数在每次在上一个useEffect处理完以后再运行
     return () => clearTimeout(timeout);
   }, [value, delay]);
 
   return debouncedValue;
 };
 
+// 这是一个 React 自定义 Hook，用于管理数组状态
 export const useArray = <T>(initialArray: T[]) => {
   const [value, setValue] = useState(initialArray);
   return {
@@ -85,6 +86,12 @@ export const useArray = <T>(initialArray: T[]) => {
     clear: () => setValue([]),
     removeIndex: (index: number) => {
       const copy = [...value];
+      /*
+        copy.splice(index, 1) 的作用：
+        - 从数组 copy 中删除索引为 index 的元素
+        - 参数 1 表示删除 1 个元素
+        - 会直接修改原数组，不返回新数组      
+      */
       copy.splice(index, 1);
       setValue(copy);
     },

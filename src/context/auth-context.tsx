@@ -12,6 +12,7 @@ interface AuthForm {
   password: string;
 }
 
+// 页面刷新后会丢失登录状态，每次刷新调用该方法初始化 user 信息
 const bootstrapUser = async () => {
   let user = null;
   const token = auth.getToken();
@@ -22,6 +23,7 @@ const bootstrapUser = async () => {
   return user;
 };
 
+// AuthContext定义context 会提供哪些数据，provider 定义如何提供这些数据
 const AuthContext = React.createContext<
   | {
       user: User | null;
@@ -35,17 +37,22 @@ AuthContext.displayName = "AuthContext";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const {
-    data: user,
+    data: user, // 重命名
     error,
     isLoading,
     isIdle,
     isError,
     run,
-    setData: setUser,
+    setData: setUser, // 重命名
   } = useAsync<User | null>();
   const queryClient = useQueryClient();
 
-  // point free
+  /*
+    point free风格
+    等价于：const login = (form: AuthForm) => {
+            return auth.login(form).then((user) => setUser(user));
+          };
+  */
   const login = (form: AuthForm) => auth.login(form).then(setUser);
   const register = (form: AuthForm) => auth.register(form).then(setUser);
   const logout = () =>
@@ -68,6 +75,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return <FullPageErrorFallback error={error} />;
   }
 
+  /*
+    - AuthContext下包括 Provider 和 Consumer
+    - 这里返回的 Provider 组件，并且是AuthContext下的 Provider 组件，因为一个应用中可能不止一个 Context
+   */
   return (
     <AuthContext.Provider
       children={children}

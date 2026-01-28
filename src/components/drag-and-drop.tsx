@@ -19,7 +19,7 @@ export const Drop = ({ children, ...props }: DropProps) => {
             ...provided.droppableProps,
             ref: provided.innerRef,
             provided,
-          });
+          } as any);
         }
         return <div />;
       }}
@@ -50,7 +50,7 @@ export const Drag = ({ children, ...props }: DragProps) => {
             ...provided.draggableProps,
             ...provided.dragHandleProps,
             ref: provided.innerRef,
-          });
+          } as any);
         }
         return <div />;
       }}

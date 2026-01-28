@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { DevTools, loadServer } from "jira-dev-tool";
-// 务必在jira-dev-tool后面引入
+// 务必在jira-dev-tool后面引入，jira-dev-tool也使用了 antd.less
 import "antd/dist/antd.less";
 import { AppProviders } from "context";
 import { Profiler } from "components/profiler";
