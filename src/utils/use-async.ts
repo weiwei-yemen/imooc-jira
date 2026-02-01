@@ -4,6 +4,7 @@ import { useMountedRef } from "utils/index";
 interface State<D> {
   error: Error | null;
   data: D | null;
+  // 这里是字面量联合类型，表示状态只能是这四种值中的一种
   stat: "idle" | "loading" | "error" | "success";
 }
 
@@ -65,6 +66,13 @@ export const useAsync = <D>(
   // run 用来触发异步请求
   const run = useCallback(
     (promise: Promise<D>, runConfig?: { retry: () => Promise<D> }) => {
+      /*
+        整体逻辑 ：只要满足以下任一条件，就抛出错误：
+          - promise 本身是 null 或 undefined
+          - promise 没有 then 方法
+        目的 ：确保传入的参数是一个 Promise 对象或至少是 thenable（有 then 方法的对象），
+        否则在后续调用 .then() 时会报错，不如在这里提前抛出明确的错误信息
+      */
       if (!promise || !promise.then) {
         throw new Error("请传入 Promise 类型数据");
       }

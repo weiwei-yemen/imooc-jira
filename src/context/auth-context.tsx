@@ -67,10 +67,57 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, [])
   );
 
+
+
+// AuthProvider渲染流程：
+// ┌─────────────────────────────────────────────────────────┐
+// │  第 1 次渲染（组件挂载）                                   │
+// ├─────────────────────────────────────────────────────────┤
+// │  1. 执行 AuthProvider 函数体                               │
+// │     ├─ isError = false (初始值)                          │
+// │     ├─ error = null (初始值)                            │
+// │     └─ useMount 注册 useEffect                           │
+// │  2. 返回 JSX: <FullPageLoading />                        │
+// │  3. React 渲染 DOM                                        │
+// │  4. 执行 useEffect (useMount 触发)                       │
+// │     └─ run(bootstrapUser()) ← 开始执行异步请求            │
+// └─────────────────────────────────────────────────────────┘
+
+// ┌─────────────────────────────────────────────────────────┐
+// │  bootstrapUser 执行过程（异步）                            │
+// ├─────────────────────────────────────────────────────────┤
+// │  bootstrapUser() 执行                                      │
+// │    ├─ 获取 token                                          │
+// │    ├─ 调用 API                                           │
+// │    └─ 返回 user 数据                                      │
+// │                                                          │
+// │  如果成功 → setData(user) → stat = "success"            │
+// │  如果失败 → setError(error) → stat = "error"            │
+// │           ↓                                              │
+// │      React 触发重新渲染                                    │
+// └─────────────────────────────────────────────────────────┘
+
+// ┌─────────────────────────────────────────────────────────┐
+// │  第 2 次渲染（bootstrapUser 失败后）                       │
+// ├─────────────────────────────────────────────────────────┤
+// │  1. 执行 AuthProvider 函数体                               │
+// │     ├─ isError = true (最新值) ← 已更新                   │
+// │     ├─ error = Error 对象 (最新值) ← 已更新               │
+// │  2. 执行 if (isError) ← 条件成立                          │
+// │  3. 返回 JSX: <FullPageErrorFallback error={error} />     │
+// │  4. React 渲染 DOM                                        │
+// └─────────────────────────────────────────────────────────┘
+
+
   if (isIdle || isLoading) {
     return <FullPageLoading />;
   }
 
+  /**
+   * 为什么这里可以使用 error？
+   * 这里是在组件渲染时执行的，当组件渲染时可以确保获取到最新的状态
+   * 而logon 中的是在异步函数中内部执行的，不能确保获取到最新的状态
+   */
   if (isError) {
     return <FullPageErrorFallback error={error} />;
   }

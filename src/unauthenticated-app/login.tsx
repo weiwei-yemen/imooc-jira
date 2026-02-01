@@ -26,7 +26,7 @@ export const LoginScreen = ({
   onError: (error: Error) => void;
 }) => {
   const { login } = useAuth();
-  const { run, isLoading } = useAsync(undefined, { throwOnError: true });
+  const { run, isLoading, error } = useAsync(undefined, { throwOnError: true });
 
   // HTMLFormElement extends Element
   const handleSubmit = async (values: {
@@ -38,6 +38,21 @@ export const LoginScreen = ({
     } catch (e: any) {
       onError(e);
     }
+
+    /* 
+      这为什么不能下面这么写？登录成功后，error 会被重置为 null
+      原因在于 react 的状态更新是异步的
+      - run 内部调用 setError(error)
+      - React 将状态更新加入调度队列
+      - await run(...) 返回
+      - if (error) 立即执行（此时新状态可能还未渲染）
+      - React 完成状态更新和重新渲染
+     */
+
+    // await run(login(values));
+    // if (error) {
+    //   onError(error);
+    // }
   };
 
   return (

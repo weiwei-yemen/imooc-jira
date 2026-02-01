@@ -41,6 +41,14 @@ export const List = ({ users, ...props }: ListProps) => {
           title: "名称",
           sorter: (a, b) => a.name.localeCompare(b.name),
           render(value, project) {
+            /*
+              三个参数的含义：
+                value - 当前单元格的值
+                  如果设置了 dataIndex，value 就是该字段对应的值
+                  如果没有设置 dataIndex，value 为 undefined
+                record - 当前行完整的数据对象（代码中叫 project）
+                index - 当前行索引（代码中没用到）
+            */
             return (
               <Link to={`projects/${String(project.id)}`}>{project.name}</Link>
             );
