@@ -111,7 +111,8 @@ export const useDocumentTitle = (title: string, keepOnUnmount = true) => {
   const oldTitle = useRef(document.title).current;
 
 
-  // 页面加载时和title变化时，设置标题
+
+  // react 组件设计哲学：在组件中，所有的副作用都应该放在 useEffect 中
   useEffect(() => {
     // 渲染完成后才会执行此副作用（react 的渲染是可以中断的）
     document.title = title;
