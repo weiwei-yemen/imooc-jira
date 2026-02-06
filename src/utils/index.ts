@@ -98,15 +98,26 @@ export const useArray = <T>(initialArray: T[]) => {
   };
 };
 
+/*
+  1. document 是浏览器提供的全局对象，表示当前还在浏览的 HTML 页面
+  2. document.title 是 HTML 页面中的一个属性，表示当前页面的标题
+  3. useEffect 是 React 提供的一个 Hook，用于在组件挂载和卸载时执行副作用
+  4. useEffect 的第一个参数是一个函数，这个函数会在组件挂载和卸载时执行
+  5. useEffect 的第二个参数是一个数组，这个数组中的值是依赖项，当依赖项发生变化时，useEffect 的第一个参数会重新执行
+  6. useEffect 的返回值是一个函数，这个函数会在组件卸载时执行
+*/
 export const useDocumentTitle = (title: string, keepOnUnmount = true) => {
+  // useRef 可以保证其中的值在组件的整个生命周期中都保持不变
   const oldTitle = useRef(document.title).current;
-  // 页面加载时: 旧title
-  // 加载后：新title
 
+
+  // 页面加载时和title变化时，设置标题
   useEffect(() => {
+    // 渲染完成后才会执行此副作用（react 的渲染是可以中断的）
     document.title = title;
   }, [title]);
 
+  // 返回的清理函数在组件卸载时执行、依赖项发生变化时执行（先执行清理，再重新执行）
   useEffect(() => {
     return () => {
       if (!keepOnUnmount) {
