@@ -24,6 +24,9 @@ export const bootstrapUser = async () => {
   return user;
 };
 
+/*
+  这里AuthProvider 的作用不是“提供 JSX 容器”，而是在渲染 children 之前做认证初始化和兜底
+*/
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { error, isLoading, isIdle, isError, run } = useAsync<User | null>();
   const dispatch: (...args: unknown[]) => Promise<User> = useDispatch();
@@ -44,8 +47,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useAuth = () => {
+  // ...args:unknown[] 表示可以传入任意类型的参数,这里不太严谨，应该使用更具体的类型
   const dispatch: (...args: unknown[]) => Promise<User> = useDispatch();
   const user = useSelector(selectUser);
+  /*
+    1. dispatch(authStore.login(form)),这里派发的是一个 thunk 函数
+    2. 由于配置了 redux-thunk 中间件，所以这个 thunk 函数会被执行
+  */
   const login = useCallback(
     (form: AuthForm) => dispatch(authStore.login(form)),
     [dispatch]

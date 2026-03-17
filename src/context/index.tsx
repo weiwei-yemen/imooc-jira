@@ -10,6 +10,7 @@ export const AppProviders = ({ children }: { children: ReactNode }) => {
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
+        {/* 等价写法：<AuthProvider children={children} /> */}
         <AuthProvider>{children}</AuthProvider>
       </QueryClientProvider>
     </Provider>
