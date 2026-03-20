@@ -45,9 +45,13 @@ export const FullPageErrorFallback = ({ error }: { error: Error | null }) => (
   </FullPage>
 );
 
-// 类型守卫
+// 类型守卫：value is Error类型谓语，告诉TypeScript，如果这个函数返回true，那么value就是Error类型
 const isError = (value: any): value is Error => value?.message;
 
+/*
+  any (不推荐)：放弃类型检查。如果你写 error.message 而 error 恰好是一个字符串，程序在运行时就会崩溃，但 TS 不会提醒你。
+  unknown (推荐)：它是类型安全的。它告诉编译器：“我不确定这个值是什么，所以在你证明它是什么之前，我不允许你对它做任何操作。”
+*/
 export const ErrorBox = ({ error }: { error: unknown }) => {
   if (isError(error)) {
     return <Typography.Text type={"danger"}>{error?.message}</Typography.Text>;
