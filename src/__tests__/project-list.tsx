@@ -44,6 +44,7 @@ const waitTable = () =>
   waitFor(() => expect(screen.getByText("骑手管理")).toBeInTheDocument(), {
     timeout: 3000,
   });
+
 test("项目列表展示正常", async () => {
   renderScreen(<ProjectListScreen />, { route: "/projects" });
   await waitTable();
@@ -57,6 +58,8 @@ test("搜索项目", async () => {
   expect(screen.getByText("骑手管理")).toBeInTheDocument();
 });
 
+// renderScreen 就是测试里的"启动器"：先伪造路由地址，再套上一层全局 Provider，
+// 最后把组件渲染出来。这样测试环境就和真实页面非常接近了。
 export const renderScreen = (ui: ReactNode, { route = "/projects" } = {}) => {
   window.history.pushState({}, "Test page", route);
 
